@@ -14,7 +14,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <jenkins.version>2.528.1</jenkins.version>
+        <jenkins.version>2.536</jenkins.version>
         <java.level>17</java.level>
         <jenkins-test-harness.version>2520.v0559e74fcf96</jenkins-test-harness.version>
         <workflow.version>2.0</workflow.version>
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>1.6</version>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -170,7 +170,7 @@
                 <version>3.9</version>
                 <configuration>
                     <!-- Optional: configure plugin-specific settings here -->
-                    <jenkinsVersion>2.528.1</jenkinsVersion>
+                    <!--<jenkinsVersion>2.528.1</jenkinsVersion>-->
                     <pluginFirstClassLoader>true</pluginFirstClassLoader>
                     <minimumJavaVersion>17</minimumJavaVersion>
                 </configuration>
@@ -203,6 +203,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.1</version>
             </plugin>
         </plugins>
   </build>
