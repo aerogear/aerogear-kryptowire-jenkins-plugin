@@ -1,6 +1,5 @@
 package org.aerogear.kryptowire;
 
-
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.util.FormValidation;

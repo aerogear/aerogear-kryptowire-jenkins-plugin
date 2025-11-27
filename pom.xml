@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>5.28</version>
-    <!--<groupId>io.jenkins.plugins</groupId> 
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>5.28</version>
+        <relativePath />
+    </parent>
+    <groupId>io.jenkins.plugins</groupId> 
     <artifactId>kryptowire</artifactId>
-    <version>0.3-SNAPSHOT</version>  -->
-    <packaging>pom</packaging>
+    <version>0.3-SNAPSHOT</version> 
+    <packaging>hpi</packaging>
     <properties>
-        <jenkins.version>2.361.4</jenkins.version>
-        <java.level>11</java.level>
-        <jenkins-test-harness.version>2.13</jenkins-test-harness.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <jenkins.version>2.528.1</jenkins.version>
+        <java.level>17</java.level>
+        <jenkins-test-harness.version>2520.v0559e74fcf96</jenkins-test-harness.version>
         <workflow.version>2.0</workflow.version>
+        <hpi-plugin.version>3.9</hpi-plugin.version>
     </properties>
     <name>Kryptowire Plugin</name>
     <description>Jenkins plugin that sends a mobile app binary to the kryptowire platform for security analysis</description>
@@ -49,14 +55,42 @@
         </pluginRepository>
     </pluginRepositories>
 
+<dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>io.jenkins.tools.bom</groupId>
+            <artifactId>bom-2.504.x</artifactId>
+            <!-- Latest version goes here -->
+            <version>5577.vea_979d35b_b_ff</version>
+            <scope>import</scope>
+            <type>pom</type>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>3.11.0</version> <!-- Use a specific version like 3.11.0 or newer -->
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version> <!-- Or a more recent stable version -->
+            <scope>provided</scope> <!-- Or compile, depending on your needs -->
+        </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>1.6</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>12.1.4</version> <!-- Use the version compatible with your Jenkins test harness -->
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -66,13 +100,13 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.3.2</version>
+            <version>4.5.14</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>4.3.2</version>
+            <version>4.5.14</version>
         </dependency>
 
         <!-- for workflow support -->
@@ -112,11 +146,12 @@
             <artifactId>symbol-annotation</artifactId>
             <version>1.5</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>1.4.0</version>
         </dependency>
+-->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
@@ -132,8 +167,12 @@
                 <groupId>org.jenkins-ci.tools</groupId>
                 <artifactId>maven-hpi-plugin</artifactId>
                 <extensions>true</extensions>
+                <version>3.9</version>
                 <configuration>
-                  <compatibleSinceVersion>2.0.0</compatibleSinceVersion>
+                    <!-- Optional: configure plugin-specific settings here -->
+                    <jenkinsVersion>2.528.1</jenkinsVersion>
+                    <pluginFirstClassLoader>true</pluginFirstClassLoader>
+                    <minimumJavaVersion>17</minimumJavaVersion>
                 </configuration>
             </plugin>
             <plugin>
