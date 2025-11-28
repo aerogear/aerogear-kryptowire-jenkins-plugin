@@ -107,12 +107,15 @@ public class KWSubmitStep extends AbstractStepImpl {
             String kwApiKey = step.kwAPIKey;
             listener.getLogger().println(" --- APIKey: " + kwApiKey);
 
-            // LEAVE THIS FOR LEGACY SUPPORT: can specify API Key in the config. This is insecure! 
+            // LEAVE THIS FOR LEGACY SUPPORT: can specify API Key in the config, but this is insecure! 
             if ( kwApiKey == null || kwApiKey.isEmpty() ){
                 kwApiKey = pluginConfig.getKwApiKey();
             }
-            if(StringUtils.isEmpty(kwEndpoint) || StringUtils.isEmpty(kwApiKey)) {
-                throw new RuntimeException("Kryptowire plugin configuration is not set!");
+            if( StringUtils.isEmpty(kwEndpoint) ){
+                throw new RuntimeException("Kryptowire plugin configuration is not correct: Endpoint is not set!");
+            }
+            if ( StringUtils.isEmpty(kwApiKey)) {
+                throw new RuntimeException("Kryptowire plugin configuration is not correct: API Key is not passed in the Jenkinsfile, nor set in the plugin configuration.");
             }
 
             FilePath fp = getContext().get(FilePath.class).child(step.filePath);

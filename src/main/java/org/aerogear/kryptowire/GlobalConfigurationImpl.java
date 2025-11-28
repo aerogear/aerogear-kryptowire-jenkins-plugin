@@ -58,7 +58,7 @@ public final class GlobalConfigurationImpl extends GlobalConfiguration {
     public void setKwEndpoint(String kwEndpoint) {
         this.kwEndpoint = kwEndpoint;
     }
-
+/*
     public FormValidation doCheckKwApiKey(@QueryParameter String value) throws IOException, ServletException {
         if (StringUtils.isEmpty(value)) {
             LOGGER.info("[info] Missing kryptowire api key field");
@@ -68,7 +68,7 @@ public final class GlobalConfigurationImpl extends GlobalConfiguration {
         return FormValidation.ok();
 
     }
-
+*/
     public FormValidation doCheckKwEndpoint(@QueryParameter String value) throws IOException, ServletException {
         if (StringUtils.isEmpty(value)) {
             LOGGER.info("[info] Missing kryptowire endpoinf field");
