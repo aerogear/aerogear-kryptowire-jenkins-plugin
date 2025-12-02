@@ -37,12 +37,71 @@ Params:
 
 * path: your mobile app binary path
 * platform: the application mobile platform (`ios` or `android`)
+* apiKey: your Kryptowire API key, which should be stored as a Jenkins Credential (of type String) - this will ensure the API Key is never printed in logs nor visible in the Jenkins UI
 
 ```groovy
 kwSubmit path: '/path/to/my/app-binary' platform: 'android'
 ```
 
-Sample android (debug build) pipeline script (assumes you have a pre-configured android node):
+Sample 1: Android (debug build) pipeline script with API key provided as a Credential (most secure):
+
+```groovy
+pipeline {
+    agent any // Or specify a specific agent/label
+
+    environment {
+        BUILD_TYPE = 'debug'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout your Android project from SCM
+                git branch: 'main', credentialsId: '', url: 'https://github.com/YOURPROJECT.git'
+            }
+        }
+
+        stage('Clean') {
+            steps {
+                // Clean the project
+                sh './gradlew clean'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Build the Android app for the specified BUILD_TYPE
+                sh "echo $ANDROID_HOME"
+                sh "./gradlew assemble${BUILD_TYPE.capitalize()}"
+            }
+        }
+
+        stage('Kryptowire') {
+            steps {
+                withCredentials([string(credentialsId: 'kryptowire-api-key', variable: 'API_KEY')]) {
+                    kwSubmit filePath: "app/build/outputs/apk/debug/app-debug.apk", platform: 'android', apiKey: API_KEY
+                }
+ 
+            }
+        }
+    }
+
+    post {
+        always {
+            // Optional: Clean up workspace after build
+            deleteDir()
+        }
+        success {
+            echo 'Android app build successful!'
+        }
+        failure {
+            echo 'Android app build failed!'
+        }
+    }
+}
+```
+
+Sample 2: Android (debug build) pipeline script with the API key provided in the Kryptowire plugin configuration (insecure - as the key is visible in logs and on the file system.) 
 
 ```groovy
 node('android') {

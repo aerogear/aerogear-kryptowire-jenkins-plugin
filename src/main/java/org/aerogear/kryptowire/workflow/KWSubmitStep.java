@@ -26,6 +26,7 @@ public class KWSubmitStep extends AbstractStepImpl {
 
     private String platform;
     private String filePath;
+    private String kwAPIKey;
 
     public String getPlatform() {
         return platform;
@@ -41,8 +42,17 @@ public class KWSubmitStep extends AbstractStepImpl {
     }
 
     @DataBoundSetter
-    public void setFilePath(String filePath) {
+    public void setFilePath( String filePath ){
         this.filePath = filePath;
+    }
+
+    public String getApiKey() {
+        return kwAPIKey;
+    }
+
+    @DataBoundSetter
+    public void setApiKey(String apiKey) {
+        this.kwAPIKey = apiKey;
     }
 
     @DataBoundConstructor
@@ -92,11 +102,20 @@ public class KWSubmitStep extends AbstractStepImpl {
                 throw new RuntimeException("[Error] Could not retrieve global Kryptowire config object.");
             }
 
-            String kwEndpoint = pluginConfig.getKwEndpoint();
-            String kwApiKey = pluginConfig.getKwApiKey();
 
-            if(StringUtils.isEmpty(kwEndpoint) || StringUtils.isEmpty(kwApiKey)) {
-                throw new RuntimeException("Kryptowire plugin configuration is not set!");
+            String kwEndpoint = pluginConfig.getKwEndpoint();
+            String kwApiKey = step.kwAPIKey;
+            listener.getLogger().println(" --- APIKey: " + kwApiKey);
+
+            // LEAVE THIS FOR LEGACY SUPPORT: can specify API Key in the config, but this is insecure! 
+            if ( kwApiKey == null || kwApiKey.isEmpty() ){
+                kwApiKey = pluginConfig.getKwApiKey();
+            }
+            if( StringUtils.isEmpty(kwEndpoint) ){
+                throw new RuntimeException("Kryptowire plugin configuration is not correct: Endpoint is not set!");
+            }
+            if ( StringUtils.isEmpty(kwApiKey)) {
+                throw new RuntimeException("Kryptowire plugin configuration is not correct: API Key is not passed in the Jenkinsfile, nor set in the plugin configuration.");
             }
 
             FilePath fp = getContext().get(FilePath.class).child(step.filePath);

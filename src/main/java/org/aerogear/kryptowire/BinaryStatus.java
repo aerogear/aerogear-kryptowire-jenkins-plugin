@@ -48,7 +48,7 @@ public class BinaryStatus {
     }
 
     public String getSubmittedAt() throws ParseException {
-        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Date d = dt.parse(submittedAt.replace("T", " "));
         return d.toString();
     }

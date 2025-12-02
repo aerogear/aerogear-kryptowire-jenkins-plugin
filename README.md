@@ -13,6 +13,7 @@ User facing docs cane be found [here](./docs).
 
 ## Development Instructions
 
+11/27/2025: Requirements: Maven 3.9.6 and JDK 17
 
 Add or create the following configuration into your maven settings file (usually located at `$HOME/.m2/settings.xml`):
 

@@ -17,8 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.jenkinsci.plugins.workflow.job.*;
-import org.omg.CORBA.Environment;
-import sun.net.www.http.HttpClient;
+//import org.omg.CORBA.Environment;
+//import sun.net.www.http.HttpClient;
 
 public class KWSubmitStepTest extends Mockito {
     @ClassRule public static BuildWatcher bw = new BuildWatcher();
