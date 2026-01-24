@@ -38,12 +38,9 @@ Params:
 * path: your mobile app binary path
 * platform: the application mobile platform (`ios` or `android`)
 * apiKey: your Kryptowire API key, which should be stored as a Jenkins Credential (of type String) - this will ensure the API Key is never printed in logs nor visible in the Jenkins UI
-* appiumScript: if your account is setup for Appium based Dynamic Testing, specify the python Appium script file here
-	* For more information about Appium DAST testing please contact support@quokka.io
+
 ```groovy
 kwSubmit path: '/path/to/my/app-binary' platform: 'android'
-kwSubmit filePath: 'app/build/outputs/apk/debug/app-debug.apk', platform: 'android', appiumScript: 'appiumTest.py'
-
 ```
 
 Sample 1: Android (debug build) pipeline script with API key provided as a Credential (most secure):
@@ -82,7 +79,7 @@ pipeline {
         stage('Kryptowire') {
             steps {
                 withCredentials([string(credentialsId: 'kryptowire-api-key', variable: 'API_KEY')]) {
-                    kwSubmit filePath: "app/build/outputs/apk/debug/app-debug.apk", platform: 'android', apiKey: API_KEY, appiumScript: 'appiumTest.py'
+                    kwSubmit filePath: "app/build/outputs/apk/debug/app-debug.apk", platform: 'android', apiKey: API_KEY
                 }
  
             }
@@ -143,5 +140,3 @@ The PDF reports are archived as build artifacts which can also be downloaded in 
 image::images/image-5.png[]
 
 NOTE: The plugin will archive the Kryptowire PDF reports by acessing the scan results page (it checks if the analysis is finished and if the PDF report was archived in Jenkins) - there is no background job that will execute such task.
-
-* For more information about Appium DAST testing please contact support@quokka.io

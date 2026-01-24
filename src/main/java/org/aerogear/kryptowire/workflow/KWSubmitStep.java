@@ -27,7 +27,6 @@ public class KWSubmitStep extends AbstractStepImpl {
     private String platform;
     private String filePath;
     private String kwAPIKey;
-    private String appiumScript;
 
     public String getPlatform() {
         return platform;
@@ -54,15 +53,6 @@ public class KWSubmitStep extends AbstractStepImpl {
     @DataBoundSetter
     public void setApiKey(String apiKey) {
         this.kwAPIKey = apiKey;
-    }
-
-    public String getAppiumScript() {
-        return appiumScript;
-    }
-
-    @DataBoundSetter
-    public void setAppiumScript(String appiumScript) {
-        this.appiumScript = appiumScript;
     }
 
     @DataBoundConstructor
@@ -130,20 +120,12 @@ public class KWSubmitStep extends AbstractStepImpl {
 
             FilePath fp = getContext().get(FilePath.class).child(step.filePath);
 
-            FilePath appiumScriptFp = null;
-            if (step.appiumScript != null && !step.appiumScript.isEmpty()) {
-                appiumScriptFp = getContext().get(FilePath.class).child(step.appiumScript);
-            }
-
             listener.getLogger().println(" --- Kryptowire submit Start ---");
             listener.getLogger().println("kwSubmit: " + step.platform + " : " + step.filePath);
-            if (appiumScriptFp != null) {
-                listener.getLogger().println("kwSubmit appium_script: " + step.appiumScript);
-            }
 
             KryptowireService kws = new KryptowireServiceImpl(kwEndpoint,  kwApiKey);
 
-            JSONObject resp = kws.submit(step.platform, fp, appiumScriptFp);
+            JSONObject resp = kws.submit(step.platform, fp);
 
             String uuid = resp.getString("uuid");
             String platform = resp.getString("platform");
