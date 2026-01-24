@@ -62,6 +62,11 @@ public class KryptowireServiceImpl implements KryptowireService {
 
     @Override
     public JSONObject submit(String platform, FilePath filePath) throws IOException, InterruptedException {
+        return submit(platform, filePath, null);
+    }
+
+    @Override
+    public JSONObject submit(String platform, FilePath filePath, FilePath appiumScript) throws IOException, InterruptedException {
         String endPointUrl = getApiEndpoint() + "/api/submit";
 
         HttpPost post = new HttpPost(endPointUrl);
@@ -69,6 +74,10 @@ public class KryptowireServiceImpl implements KryptowireService {
         builder.addBinaryBody("app", filePath.read(), ContentType.APPLICATION_OCTET_STREAM, filePath.getName());
         builder.addTextBody("key", getApiKey());
         builder.addTextBody("platform", platform);
+
+        if (appiumScript != null) {
+            builder.addBinaryBody("scriptFiles", appiumScript.read(), ContentType.APPLICATION_OCTET_STREAM, appiumScript.getName());
+        }
 
         HttpEntity entity = builder.build();
         post.setEntity(entity);
