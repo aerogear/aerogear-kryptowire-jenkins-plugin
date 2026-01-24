@@ -1,0 +1,147 @@
+== Aerogear Kryptowire Jenkins Plugin
+
+This Jenkins plugin integrates with the Kryptowire platform by adding the following features:
+
+* Mobile application binary submission to the Kryptowire platform for security analysis
+* Display security scan results in Jenkins
+* Archives Kryptowire PDF reports as build artifacts
+
+Supported mobile platforms:
+
+* Android
+* iOS
+
+More details about the Kryptowire platform: https://www.kryptowire.com/
+
+=== Usage
+
+=== Kryptowire Global Configuration
+
+You can set your Kryptowire global configuration in Jenkins configuration page (usually by acessing the `/configure` route).
+
+You can quickly find the Kryptowire section from the top menu:
+
+image::images/image-1.png[]
+
+You will need to the required Kryptowire fields to use the DSL function:
+
+image::images/image-2.png[]
+
+Just click on "Save" at the bottom of the screen to save you Kryptowire configuration.
+
+=== Pipeline DSL Function
+
+The plugin adds a dsl function that can be used in a Jenkins pipeline script to send a app binary file for security analysis to the  Kryptowire platform.
+
+Params:
+
+* path: your mobile app binary path
+* platform: the application mobile platform (`ios` or `android`)
+* apiKey: your Kryptowire API key, which should be stored as a Jenkins Credential (of type String) - this will ensure the API Key is never printed in logs nor visible in the Jenkins UI
+* appiumScript: if your account is setup for Appium based Dynamic Testing, specify the python Appium script file here
+	* For more information about Appium DAST testing please contact support@quokka.io
+```groovy
+kwSubmit path: '/path/to/my/app-binary' platform: 'android'
+kwSubmit filePath: 'app/build/outputs/apk/debug/app-debug.apk', platform: 'android', appiumScript: 'appiumTest.py'
+
+```
+
+Sample 1: Android (debug build) pipeline script with API key provided as a Credential (most secure):
+
+```groovy
+pipeline {
+    agent any // Or specify a specific agent/label
+
+    environment {
+        BUILD_TYPE = 'debug'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout your Android project from SCM
+                git branch: 'main', credentialsId: '', url: 'https://github.com/YOURPROJECT.git'
+            }
+        }
+
+        stage('Clean') {
+            steps {
+                // Clean the project
+                sh './gradlew clean'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Build the Android app for the specified BUILD_TYPE
+                sh "echo $ANDROID_HOME"
+                sh "./gradlew assemble${BUILD_TYPE.capitalize()}"
+            }
+        }
+
+        stage('Kryptowire') {
+            steps {
+                withCredentials([string(credentialsId: 'kryptowire-api-key', variable: 'API_KEY')]) {
+                    kwSubmit filePath: "app/build/outputs/apk/debug/app-debug.apk", platform: 'android', apiKey: API_KEY, appiumScript: 'appiumTest.py'
+                }
+ 
+            }
+        }
+    }
+
+    post {
+        always {
+            // Optional: Clean up workspace after build
+            deleteDir()
+        }
+        success {
+            echo 'Android app build successful!'
+        }
+        failure {
+            echo 'Android app build failed!'
+        }
+    }
+}
+```
+
+Sample 2: Android (debug build) pipeline script with the API key provided in the Kryptowire plugin configuration (insecure - as the key is visible in logs and on the file system.) 
+
+```groovy
+node('android') {
+    stage 'Checkout'
+    checkout scm
+
+    stage 'Prepare'
+    chmod +x './gradlew'
+
+    stage 'Build'
+    ./gradlew assembleDebug
+
+    stage('Kryptowire')
+    //using a try-catch block so the pipeline script won't fail if the krypowire plugin is not installed
+    try {
+        kwSubmit filePath: "app/build/outputs/apk/debug/app-debug.apk", platform: 'android'
+    } catch(Error e) {
+          e.printStackTrace()
+    }
+
+    stage 'Archive'
+    archiveArtifacts artifacts: 'app/build/outputs/apk/debug/app-debug.apk', excludes: 'app/build/outputs/apk/*-unaligned.apk'
+}
+```
+
+You can see your analysis status by clicking on the left menu kryptowire item (once the build is finished):
+
+image::images/image-3.png[]
+
+It may take a while to process your binary but the screen will show more details once the analysis is done:
+
+image::images/image-4.png[]
+
+The PDF reports are archived as build artifacts which can also be downloaded in the build overview page:
+
+image::images/image-5.png[]
+
+NOTE: The plugin will archive the Kryptowire PDF reports by acessing the scan results page (it checks if the analysis is finished and if the PDF report was archived in Jenkins) - there is no background job that will execute such task.
+
+* For more information about Appium DAST testing please contact support@quokka.io
